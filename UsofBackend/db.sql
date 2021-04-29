@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS usof;
 
-CREATE USER IF NOT EXISTS 'paxanddos'@'localhost' IDENTIFIED WITH mysql_native_password BY 'securepass';
-GRANT ALL ON *.* TO 'paxanddos'@'localhost' WITH GRANT OPTION;
+CREATE USER IF NOT EXISTS 'ntaran'@'localhost' IDENTIFIED WITH mysql_native_password BY 'securepass';
+GRANT ALL ON *.* TO 'ntaran'@'localhost' WITH GRANT OPTION;
 
 CREATE TABLE usof.users (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
