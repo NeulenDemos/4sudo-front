@@ -16,9 +16,8 @@ class CreatePostsTable extends Migration
 		$table->timestamp('date')->useCurrent();
 		$table->boolean('status')->default(TRUE);
 		$table->string('content',4096);
-		$table->unsignedBigInteger('category_id',);
-        $table->foreign('user_id')->references('id')->on('users');
-        $table->foreign('category_id')->references('id')->on('categories');
+		$table->string('categories',1024)->default('[]');
+        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         $table->timestamps();
 
         });

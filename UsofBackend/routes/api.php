@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\PostsController;
+use App\Http\Controllers\CommentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,10 +23,6 @@ use App\Http\Controllers\UsersController;
 //     return $request->user();
 // });
 
-// users
-// categories
-// posts
-// comments
 const C_PATH = 'App\Http\Controllers\\';
 
 Route::post('auth/register', C_PATH.'AuthController@register');
@@ -51,16 +50,16 @@ Route::patch('posts/{id}', C_PATH.'PostsController@update');
 Route::delete('posts/{id}', C_PATH.'PostsController@delete');
 Route::delete('posts/{id}/like', C_PATH.'PostsController@deleteLike');
 
-Route::get('categories', C_PATH.'CategoryController@getAll');
-Route::get('categories/{id}', C_PATH.'CategoryController@get');
-Route::get('categories/{id}/posts', C_PATH.'CategoryController@getPosts');
-Route::post('categories', C_PATH.'CategoryController@create');
-Route::patch('categories/{id}', C_PATH.'CategoryController@update');
-Route::delete('categories/{id}', C_PATH.'CategoryController@delete');
+Route::get('categories', C_PATH.'CategoriesController@getAll');
+Route::get('categories/{id}', C_PATH.'CategoriesController@get');
+Route::get('categories/{id}/posts', C_PATH.'CategoriesController@getPosts');
+Route::post('categories', C_PATH.'CategoriesController@create');
+Route::patch('categories/{id}', C_PATH.'CategoriesController@update');
+Route::delete('categories/{id}', C_PATH.'CategoriesController@delete');
 
-Route::get('comments/{id}', C_PATH.'CommentController@get');
-Route::get('comments/{id}/like', C_PATH.'CommentController@getLikes');
-Route::post('comments/{id}/like', C_PATH.'CommentController@createLike');
-Route::patch('comments/{id}', C_PATH.'CommentController@update');
-Route::delete('comments/{id}', C_PATH.'CommentController@delete');
-Route::delete('comments/{id}/like', C_PATH.'CommentController@deleteLike');
+Route::get('comments/{id}', C_PATH.'CommentsController@get');
+Route::get('comments/{id}/like', C_PATH.'CommentsController@getLikes');
+Route::post('comments/{id}/like', C_PATH.'CommentsController@createLike');
+Route::patch('comments/{id}', C_PATH.'CommentsController@update');
+Route::delete('comments/{id}', C_PATH.'CommentsController@delete');
+Route::delete('comments/{id}/like', C_PATH.'CommentsController@deleteLike');
