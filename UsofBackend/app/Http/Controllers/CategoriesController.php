@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Categories;
 use App\Models\Posts;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CategoriesController extends Controller
@@ -28,12 +29,16 @@ class CategoriesController extends Controller
     }
     public function create(Request $request)
     {
+        if (!User::isAdmin())
+            return response()->json(['error' => 'Forbidden'], 403);
         $query = Categories::query();
         $result = $query->create($request->all());
         return $result;
     }
     public function update($id, Request $request)
     {
+        if (!User::isAdmin())
+            return response()->json(['error' => 'Forbidden'], 403);
         $data = $request->all();
         $query = Categories::query()->where('id', '=', $id);
         $result = array();
@@ -48,6 +53,8 @@ class CategoriesController extends Controller
     }
     public function delete($id)
     {
+        if (!User::isAdmin())
+            return response()->json(['error' => 'Forbidden'], 403);
         $query = Categories::query();
         $result = $query->where('id', '=', $id)->delete();
         return $result;

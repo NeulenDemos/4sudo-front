@@ -7,6 +7,8 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\PostsController;
 use App\Http\Controllers\CommentsController;
+use App\Http\Controllers\AuthController;
+use Orchid\Platform\Models\Role;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,13 +26,15 @@ use App\Http\Controllers\CommentsController;
 // });
 
 const C_PATH = 'App\Http\Controllers\\';
+Route::group(['prefix' => 'auth'], function ($router) {
+    Route::post('login', C_PATH.'AuthController@login');
+    Route::post('register', C_PATH.'AuthController@register');
+    Route::middleware('auth:api')->post('logout', C_PATH.'AuthController@logout');
+    Route::post('password-reset', C_PATH.'AuthController@resetPassword');
+    Route::post('password-reset/{token}', C_PATH.'AuthController@newPassword');
+});
 
-Route::post('auth/register', C_PATH.'AuthController@register');
-Route::post('auth/login', C_PATH.'AuthController@login');
-Route::post('auth/logout', C_PATH.'AuthController@logout');
-Route::post('auth/password-reset', C_PATH.'AuthController@reset');
-Route::post('auth/password-reset/{token}', C_PATH.'AuthController@newPassword');
-
+Route::group(['middleware' => 'auth:api'], function ($router) {
 Route::get('users', C_PATH.'UsersController@getAll');
 Route::get('users/{id}', C_PATH.'UsersController@get');
 Route::post('users', C_PATH.'UsersController@create');
@@ -63,3 +67,4 @@ Route::post('comments/{id}/like', C_PATH.'CommentsController@createLike');
 Route::patch('comments/{id}', C_PATH.'CommentsController@update');
 Route::delete('comments/{id}', C_PATH.'CommentsController@delete');
 Route::delete('comments/{id}/like', C_PATH.'CommentsController@deleteLike');
+});

@@ -5,14 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Posts;
 use App\Models\Comments;
 use App\Models\Likes;
+use App\Models\User;
+use App\Filters\PostFilters;
 use Illuminate\Http\Request;
 
 class PostsController extends Controller
 {
-    public function getAll()
+    public function getAll(Request $request)
     {
-        $query = Posts::query();
-        $result = $query->get('*');
+        $filters = new PostFilters($request);
+        $query =  $filters->apply(Posts::query());
+        $result = $query->get();
         return $result;
     }
     public function get($id)
@@ -29,10 +32,12 @@ class PostsController extends Controller
     }
     public function createComment($id, Request $request)
     {
+        $user_id = auth()->user()->id;
         $query = Comments::query();
-        $keys = $request->all();
-        $keys['post_id'] = $id;
-        $result = $query->create($keys);
+        $data = $request->all();
+        $data['post_id'] = $id;
+        $data['user_id'] = $user_id;
+        $result = $query->create($data);
         return $result;
     }
     public function getCategories($id)
@@ -49,8 +54,10 @@ class PostsController extends Controller
     }
     public function create(Request $request)
     {
+        $user_id = auth()->user()->id;
         $query = Posts::query();
         $data = $request->all();
+        $data['user_id'] = $user_id;
         if (isset($data['categories']))
             $data['categories'] = json_encode($data['categories']);
         $result = $query->create($data);
@@ -58,16 +65,28 @@ class PostsController extends Controller
     }
     public function createLike($id, Request $request)
     {
+        $user_id = auth()->user()->id;
         $query = Likes::query();
-        $keys = $request->all();
-        $keys['post_id'] = $id;
-        $result = $query->create($keys);
+        $data = $request->all();
+        $data['post_id'] = $id;
+        $data['user_id'] = $user_id;
+        $result = $query->create($data);
+        if ($data['type'] == 'like')
+            $query = Posts::query()->where('id', '=', $id)->increment('rating');
+        else if ($data['type'] == 'dislike')
+            $query = Posts::query()->where('id', '=', $id)->decrement('rating');
         return $result;
     }
     public function update($id, Request $request)
     {
+        $user_id = auth()->user()->id;
         $data = $request->all();
         $query = Posts::query()->where('id', '=', $id);
+        $result = $query->get(['user_id'])->all();
+        if (!$result)
+            return response()->json(['error' => 'Not found'], 404);
+        if ($result[0]['user_id'] != $user_id && !User::isAdmin())
+            return response()->json(['error' => 'Forbidden'], 403);
         $result = array();
         if (isset($data['title']))
             array_push($result, $query->update(['title' => $data['title']]));
@@ -84,14 +103,27 @@ class PostsController extends Controller
     }
     public function delete($id)
     {
-        $query = Posts::query();
-        $result = $query->where('id', '=', $id)->delete();
+        $user_id = auth()->user()->id;
+        $query = Posts::query()->where('id', '=', $id);
+        $result = $query->get(['user_id'])->all();
+        if (!$result)
+            return response()->json(['error' => 'Not found'], 404);
+        if ($result[0]['user_id'] != $user_id && !User::isAdmin())
+            return response()->json(['error' => 'Forbidden'], 403);
+        $result = $query->delete();
         return $result;
     }
     public function deleteLike($id)
     {
-        $query = Likes::query();
-        $result = $query->where('post_id', '=', $id)->delete();
+        $user_id = auth()->user()->id;
+        $query = Likes::query()->where('post_id', '=', $id);
+        $result = $query->get(['user_id'])->all();
+        if (!$result)
+            return response()->json(['error' => 'Not found'], 404);
+        if ($result[0]['user_id'] != $user_id && !User::isAdmin())
+            return response()->json(['error' => 'Forbidden'], 403);
+        $result = $query->delete();
+        $query = Posts::query()->where('id', '=', $id)->decrement('rating');
         return $result;
     }
 }

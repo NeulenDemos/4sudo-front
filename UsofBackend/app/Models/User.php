@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Orchid\Platform\Models\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     /**
      * The attributes that are mass assignable.
@@ -12,7 +13,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'username',
+        'login',
         'name',
         'email',
         'password',
@@ -41,7 +42,7 @@ class User extends Authenticatable
     protected $casts = [
         'permissions' => 'array',
         'email_verified_at' => 'datetime',
-        'username' => 'string',
+        'login' => 'string',
         'name' => 'string',
         'email' => 'string',
         'password' => 'string',
@@ -74,4 +75,22 @@ class User extends Authenticatable
         'updated_at',
         'created_at',
     ];
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+    public static function isAdmin()
+    {
+        $user_id = auth()->user()->id;
+        $query = User::query();
+        $result = $query->where('id', '=', $user_id)->where('role', '=', 'admin')->get()->all();
+        if (!empty($result))
+            return true;
+        return false;
+    }
 }

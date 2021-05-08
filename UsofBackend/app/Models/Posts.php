@@ -18,7 +18,8 @@ class Posts extends Model
         'date',
         'status',
         'content',
-        'categories'
+        'categories',
+        'rating'
 	];
 
     protected $casts = [
@@ -27,6 +28,7 @@ class Posts extends Model
         'date' => 'timestamp',
         'status' => 'integer',
         'content' => 'string',
-        'categories' => 'string'
+        'categories' => 'string',
+        'rating' => 'integer'
     ];
 }

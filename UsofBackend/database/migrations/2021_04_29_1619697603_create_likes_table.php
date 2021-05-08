@@ -13,8 +13,8 @@ class CreateLikesTable extends Migration
         $table->id();
 		$table->unsignedBigInteger('user_id',);
 		$table->timestamp('date')->useCurrent();
-		$table->unsignedBigInteger('post_id',)->default(0);
-		$table->unsignedBigInteger('comment_id',)->default(0);
+		$table->unsignedBigInteger('post_id',)->nullable()->default(NULL);
+		$table->unsignedBigInteger('comment_id',)->nullable()->default(NULL);
 		$table->enum('type',['like','dislike']);
         $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->default(NULL);
         $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade')->default(NULL);

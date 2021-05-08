@@ -11,18 +11,19 @@ class CreateOrchidUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-
+        Schema::create('users', function (Blueprint $table) {
 
             $table->id();
-            $table->string('username',10)->unique()->default(NULL);
+            $table->string('login',10)->unique()->nullable()->default(NULL);
             $table->string('password',64);
             $table->string('name',20);
             $table->string('email',64)->unique();
-            $table->integer('picture',)->unsigned()->default(0);
+            $table->string('picture',15)->nullable()->default(NULL);
             $table->integer('rating',)->default(0);
             $table->enum('role',['user','admin'])->default('user');
             $table->jsonb('permissions')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->rememberToken();
             $table->timestamps();
 
         });

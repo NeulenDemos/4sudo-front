@@ -20,6 +20,8 @@ use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 
+use App\Models\User as appUser;
+
 class UserEditScreen extends Screen
 {
     /**
@@ -187,6 +189,15 @@ class UserEditScreen extends Screen
             ->save();
 
         $user->replaceRoles($request->input('user.roles'));
+
+        $role = 'user';
+        if ($request->input('user.roles')) {
+            switch ($request->input('user.roles')[0]) {
+                case 1: $role = 'admin'; break;
+                case 2: $role = 'user'; break;
+            }
+        }
+        appUser::query()->where('id', '=', $user->id)->update(['role' => $role]);
 
         Toast::info(__('User was saved.'));
 
