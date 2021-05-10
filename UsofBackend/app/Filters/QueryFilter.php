@@ -10,6 +10,8 @@ abstract class QueryFilter
     protected $request;
     protected $builder;
     protected $delimiter = ',';
+    public $page_num = null;
+    public $posts_num = 10;
 
     public function __construct(Request $request)
     {

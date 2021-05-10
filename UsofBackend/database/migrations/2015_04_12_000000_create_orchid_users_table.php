@@ -19,6 +19,7 @@ class CreateOrchidUsersTable extends Migration
             $table->string('name',20);
             $table->string('email',64)->unique();
             $table->string('picture',15)->nullable()->default(NULL);
+            $table->string('favorites',4096)->default('[]');
             $table->integer('rating',)->default(0);
             $table->enum('role',['user','admin'])->default('user');
             $table->jsonb('permissions')->nullable();

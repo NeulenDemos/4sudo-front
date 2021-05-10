@@ -12,7 +12,7 @@ class CreatePostsTable extends Migration
 
         $table->id();
 		$table->unsignedBigInteger('user_id',);
-		$table->string('title',32);
+		$table->string('title',64);
 		$table->timestamp('date')->useCurrent();
 		$table->boolean('status')->default(TRUE);
 		$table->string('content',4096);

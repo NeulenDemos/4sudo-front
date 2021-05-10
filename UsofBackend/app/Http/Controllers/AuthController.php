@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Http\Controllers\Controller;
+use App\Models\ResetPassword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -36,11 +36,28 @@ class AuthController extends Controller
     }
     public function resetPassword(Request $request)
     {
-
+        $token = substr(bin2hex(random_bytes(10)), 0, 10);
+        $email = $request->all()['email'];
+        $result = User::query()->where(['email' => $email])->get()->all();
+        if (!$result)
+            return 0;
+        $login = $result[0]['name'];
+        $query = ResetPassword::query();
+        $query->create(["email" => $email, "token" => $token]);
+        MailController::sendResetPassword($email, $login, $token);
+        return 1;
     }
-    public function newPassword($token)
+    public function newPassword($token, Request $request)
     {
-
+        $query = ResetPassword::query()->where(['token' => $token]);
+        $result = $query->get()->all();
+        if (!$result)
+            return 0;
+        $query->delete();
+        $email = $result[0]['email'];
+        $password = Hash::make($request->all()["password"]);
+        $result = User::query()->where(['email' => $email])->update(["password" => $password]);
+        return $result;
     }
     protected function respondWithToken($token)
     {

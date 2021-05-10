@@ -31,4 +31,14 @@ class PostFilters extends QueryFilter
     {
         return $this->builder->where('status', '=', $status);
     }
+
+    // paginate
+    public function page($num)
+    {
+        $this->page_num = $num;
+    }
+    public function posts_per_page($num)
+    {
+        $this->posts_num = $num;
+    }
 }

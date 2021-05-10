@@ -21,6 +21,13 @@ class UsersController extends Controller
         $result = $query->where('id', '=', $id)->get('*');
         return $result;
     }
+    public function getFavorites()
+    {
+        $user_id = auth()->user()->id;
+        $query = User::query()->where('id', '=', $user_id);
+        $result = $query->get(['favorites'])->all()[0]['favorites'];
+        return $result;
+    }
     public function create(Request $request)
     {
         $query = User::query();

@@ -15,7 +15,10 @@ class PostsController extends Controller
     {
         $filters = new PostFilters($request);
         $query =  $filters->apply(Posts::query());
-        $result = $query->get();
+        if ($filters->page_num === null)
+            $result = $query->get();
+        else
+            $result = $query->paginate($filters->posts_num, ['*'], 'page', $filters->page_num);
         return $result;
     }
     public function get($id)
@@ -77,6 +80,19 @@ class PostsController extends Controller
             $query = Posts::query()->where('id', '=', $id)->decrement('rating');
         return $result;
     }
+    public function createFavorite($id)
+    {
+        $user_id = auth()->user()->id;
+        $query = User::query()->where('id', '=', $user_id);
+        $favorites = json_decode($query->get(['favorites'])->all()[0]['favorites']);
+        $result = 0;
+        $id = intval($id);
+        if (!in_array($id, $favorites)) {
+            array_push($favorites, $id);
+            $result = $query->update(['favorites' => json_encode($favorites)]);
+        }
+        return $result;
+    }
     public function update($id, Request $request)
     {
         $user_id = auth()->user()->id;
@@ -95,7 +111,7 @@ class PostsController extends Controller
         if (isset($data['content']))
             array_push($result, $query->update(['content' => $data['content']]));
         if (isset($data['categories']))
-            array_push($result, $query->update(['categories' => $data['categories']]));
+            array_push($result, $query->update(['categories' => json_encode($data['categories'])]));
         foreach ($result as $key)
             if ($key == 0)
                 return ["ok" => false];
@@ -124,6 +140,20 @@ class PostsController extends Controller
             return response()->json(['error' => 'Forbidden'], 403);
         $result = $query->delete();
         $query = Posts::query()->where('id', '=', $id)->decrement('rating');
+        return $result;
+    }
+    public function deleteFavorite($id)
+    {
+        $user_id = auth()->user()->id;
+        $query = User::query()->where('id', '=', $user_id);
+        $favorites = json_decode($query->get(['favorites'])->all()[0]['favorites']);
+        $keys = array_keys($favorites, intval($id), true);
+        $result = 0;
+        if (isset($keys[0])) {
+            unset($favorites[$keys[0]]);
+            $favorites = array_values($favorites);
+            $result = $query->update(['favorites' => json_encode($favorites)]);
+        }
         return $result;
     }
 }

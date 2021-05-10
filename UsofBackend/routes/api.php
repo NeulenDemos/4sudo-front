@@ -36,6 +36,7 @@ Route::group(['prefix' => 'auth'], function ($router) {
 
 Route::group(['middleware' => 'auth:api'], function ($router) {
 Route::get('users', C_PATH.'UsersController@getAll');
+Route::get('users/favorites', C_PATH.'UsersController@getFavorites');
 Route::get('users/{id}', C_PATH.'UsersController@get');
 Route::post('users', C_PATH.'UsersController@create');
 Route::post('users/avatar', C_PATH.'UsersController@avatar');
@@ -50,9 +51,11 @@ Route::get('posts/{id}/categories', C_PATH.'PostsController@getCategories');
 Route::get('posts/{id}/like', C_PATH.'PostsController@getLikes');
 Route::post('posts', C_PATH.'PostsController@create');
 Route::post('posts/{id}/like', C_PATH.'PostsController@createLike');
+Route::post('posts/{id}/favorite', C_PATH.'PostsController@createFavorite');
 Route::patch('posts/{id}', C_PATH.'PostsController@update');
 Route::delete('posts/{id}', C_PATH.'PostsController@delete');
 Route::delete('posts/{id}/like', C_PATH.'PostsController@deleteLike');
+Route::delete('posts/{id}/favorite', C_PATH.'PostsController@deleteFavorite');
 
 Route::get('categories', C_PATH.'CategoriesController@getAll');
 Route::get('categories/{id}', C_PATH.'CategoriesController@get');
