@@ -6,6 +6,7 @@ use App\Models\Posts;
 use App\Models\Comments;
 use App\Models\Likes;
 use App\Models\User;
+use App\Models\Subscriptions;
 use App\Filters\PostFilters;
 use Illuminate\Http\Request;
 
@@ -36,11 +37,26 @@ class PostsController extends Controller
     public function createComment($id, Request $request)
     {
         $user_id = auth()->user()->id;
+        $status = Posts::query()->where('id', '=', $id)->where('status', '=', TRUE)->get()->all();
+        if (!$status)
+            return response('0', 400);
         $query = Comments::query();
         $data = $request->all();
         $data['post_id'] = $id;
         $data['user_id'] = $user_id;
         $result = $query->create($data);
+        $subs = Subscriptions::query()->where('post_id', '=', $id)->get(['user_id'])->all();
+        if ($subs) {
+            $author = User::query()->where('id', '=', $user_id)->get(['name'])->all()[0]['name'];
+            $title = Posts::query()->where('id', '=', $id)->get(['title'])->all()[0]['title'];
+            $subs_id = [];
+            foreach ($subs as $value)
+                array_push($subs_id, $value['user_id']);
+            $users = User::query()->whereKey($subs_id)->get(['email', 'name'])->all();
+            foreach ($users as $user) {
+                MailController::sendSubscriptionNotification($user['email'], $user['name'], $author, $data['content'], $id, $title);
+            }
+        }
         return $result;
     }
     public function getCategories($id)
@@ -91,6 +107,17 @@ class PostsController extends Controller
             array_push($favorites, $id);
             $result = $query->update(['favorites' => json_encode($favorites)]);
         }
+        return $result;
+    }
+    public function createSubscribe($id)
+    {
+        $user_id = auth()->user()->id;
+        $id = intval($id);
+        $query = Subscriptions::query();
+        $result = $query->where('user_id', '=', $user_id)->where('post_id', '=', $id)->get()->all();
+        if ($result)
+            return response('0', 400);
+        $result = $query->create(['user_id' => $user_id, 'post_id' => $id]);
         return $result;
     }
     public function update($id, Request $request)
@@ -154,6 +181,13 @@ class PostsController extends Controller
             $favorites = array_values($favorites);
             $result = $query->update(['favorites' => json_encode($favorites)]);
         }
+        return $result;
+    }
+    public function deleteSubscribe($id)
+    {
+        $user_id = auth()->user()->id;
+        $query = Subscriptions::query()->where('user_id', '=', $user_id)->where('post_id', '=', intval($id));
+        $result = $query->delete();
         return $result;
     }
 }

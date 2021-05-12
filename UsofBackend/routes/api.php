@@ -52,10 +52,12 @@ Route::get('posts/{id}/like', C_PATH.'PostsController@getLikes');
 Route::post('posts', C_PATH.'PostsController@create');
 Route::post('posts/{id}/like', C_PATH.'PostsController@createLike');
 Route::post('posts/{id}/favorite', C_PATH.'PostsController@createFavorite');
+Route::post('posts/{id}/subscribe', C_PATH.'PostsController@createSubscribe');
 Route::patch('posts/{id}', C_PATH.'PostsController@update');
 Route::delete('posts/{id}', C_PATH.'PostsController@delete');
 Route::delete('posts/{id}/like', C_PATH.'PostsController@deleteLike');
 Route::delete('posts/{id}/favorite', C_PATH.'PostsController@deleteFavorite');
+Route::delete('posts/{id}/subscribe', C_PATH.'PostsController@deleteSubscribe');
 
 Route::get('categories', C_PATH.'CategoriesController@getAll');
 Route::get('categories/{id}', C_PATH.'CategoriesController@get');
