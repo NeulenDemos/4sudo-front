@@ -11,28 +11,24 @@ class CategoriesController extends Controller
 {
     public function getAll()
     {
-        $query = Categories::query();
-        $result = $query->get('*');
+        $result = Categories::get();
         return $result;
     }
     public function get($id)
     {
-        $query = Categories::query();
-        $result = $query->where('id', '=', $id)->get('*');
+        $result = Categories::whereKey($id)->get();
         return $result;
     }
     public function getPosts($id)
     {
-        $query = Posts::query();
-        $result = $query->where('categories', 'LIKE', "%\"$id\"%")->get('*');
+        $result = Posts::where('categories', 'LIKE', "%\"$id\"%")->get();
         return $result;
     }
     public function create(Request $request)
     {
         if (!User::isAdmin())
             return response()->json(['error' => 'Forbidden'], 403);
-        $query = Categories::query();
-        $result = $query->create($request->all());
+        $result = Categories::create($request->all());
         return $result;
     }
     public function update($id, Request $request)
@@ -40,7 +36,7 @@ class CategoriesController extends Controller
         if (!User::isAdmin())
             return response()->json(['error' => 'Forbidden'], 403);
         $data = $request->all();
-        $query = Categories::query()->where('id', '=', $id);
+        $query = Categories::whereKey($id);
         $result = array();
         if (isset($data['title']))
             array_push($result, $query->update(['title' => $data['title']]));
@@ -48,15 +44,14 @@ class CategoriesController extends Controller
             array_push($result, $query->update(['description' => $data['description']]));
         foreach ($result as $key)
             if ($key == 0)
-                return json_encode(["ok" => false]);
-        return json_encode(["ok" => true]);
+                return response('0', 400);
+        return response('1', 200);
     }
     public function delete($id)
     {
         if (!User::isAdmin())
             return response()->json(['error' => 'Forbidden'], 403);
-        $query = Categories::query();
-        $result = $query->where('id', '=', $id)->delete();
+        $result = Categories::whereKey($id)->delete();
         return $result;
     }
 }

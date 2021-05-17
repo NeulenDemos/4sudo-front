@@ -10,30 +10,25 @@ class UsersController extends Controller
 {
     public function getAll()
     {
-        // $user_id = auth()->user()->id;
-        $query = User::query();
-        $result = $query->get('*');
+        $result = User::get();
         return $result;
     }
     public function get($id)
     {
-        $query = User::query();
-        $result = $query->where('id', '=', $id)->get('*');
+        $result = User::whereKey($id)->get();
         return $result;
     }
     public function getFavorites()
     {
         $user_id = auth()->user()->id;
-        $query = User::query()->where('id', '=', $user_id);
-        $result = $query->get(['favorites'])->all()[0]['favorites'];
+        $result = User::whereKey($user_id)->get(['favorites'])->all()[0]['favorites'];
         return $result;
     }
     public function create(Request $request)
     {
-        $query = User::query();
         $data = $request->all();
         $data['password'] = Hash::make($data['password']);
-        $result = $query->create($data);
+        $result = User::create($data);
         return $result;
     }
     public function avatar(Request $request)
@@ -44,8 +39,7 @@ class UsersController extends Controller
         ]);
         $imageName = time().'.'.$request->image->extension();
         $request->image->move(public_path('storage/images'), $imageName);
-        $query = User::query()->where('id', '=', $user_id);
-        $result = $query->update(['picture' => $imageName]);
+        $result = User::whereKey($user_id)->update(['picture' => $imageName]);
         return $result;
     }
     public function update($id, Request $request)
@@ -54,7 +48,7 @@ class UsersController extends Controller
         if ($id != $user_id && !User::isAdmin())
             return response()->json(['error' => 'Forbidden'], 403);
         $data = $request->all();
-        $query = User::query()->where('id', '=', $id);
+        $query = User::whereKey($id);
         $result = array();
         if (isset($data['login']))
             array_push($result, $query->update(['login' => $data['login']]));
@@ -70,16 +64,15 @@ class UsersController extends Controller
             array_push($result, $query->update(['role' => $data['role']]));
         foreach ($result as $key)
             if ($key == 0)
-                return ["ok" => false];
-        return ["ok" => true];
+                return response('0', 400);
+        return response('1', 200);
     }
     public function delete($id)
     {
         $user_id = auth()->user()->id;
         if ($id != $user_id && !User::isAdmin())
             return response()->json(['error' => 'Forbidden'], 403);
-        $query = User::query();
-        $result = $query->where('id', '=', $id)->delete();
+        $result = User::whereKey($id)->delete();
         return $result;
     }
 }

@@ -11,31 +11,31 @@ class CommentsController extends Controller
 {
     public function get($id)
     {
-        $query = Comments::query();
-        $result = $query->where('id', '=', $id)->get('*');
+        $result = Comments::whereKey($id)->get();
         return $result;
     }
     public function getLikes($id)
     {
-        $query = Likes::query();
-        $result = $query->where('comment_id', '=', $id)->get('*');
+        $result = Likes::where('comment_id', '=', $id)->get();
         return $result;
     }
     public function createLike($id, Request $request)
     {
         $user_id = auth()->user()->id;
-        $query = Likes::query();
+        $result  = Likes::where('comment_id', '=', $id)->where('user_id', '=', $user_id)->get()->all();
+        if ($result)
+            return response()->json(['error' => 'Forbidden'], 403);
         $data = $request->all();
         $data['comment_id'] = $id;
         $data['user_id'] = $user_id;
-        $result = $query->create($data);
+        $result = Likes::create($data);
         return $result;
     }
     public function update($id, Request $request)
     {
         $user_id = auth()->user()->id;
         $data = $request->all();
-        $query = Comments::query()->where('id', '=', $id);
+        $query = Comments::whereKey($id);
         $result = $query->get(['user_id'])->all();
         if (!$result)
             return response()->json(['error' => 'Not found'], 404);
@@ -46,13 +46,13 @@ class CommentsController extends Controller
             array_push($result, $query->update(['content' => $data['content']]));
         foreach ($result as $key)
             if ($key == 0)
-                return json_encode(["ok" => false]);
-        return json_encode(["ok" => true]);
+                return response('0', 400);
+        return response('1', 200);
     }
     public function delete($id)
     {
         $user_id = auth()->user()->id;
-        $query = Comments::query()->where('id', '=', $id);
+        $query = Comments::whereKey($id);
         $result = $query->get(['user_id'])->all();
         if (!$result)
             return response()->json(['error' => 'Not found'], 404);
@@ -64,7 +64,7 @@ class CommentsController extends Controller
     public function deleteLike($id)
     {
         $user_id = auth()->user()->id;
-        $query = Likes::query()->where('comment_id', '=', $id);
+        $query = Likes::where('comment_id', '=', $id);
         $result = $query->get(['user_id'])->all();
         if (!$result)
             return response()->json(['error' => 'Not found'], 404);

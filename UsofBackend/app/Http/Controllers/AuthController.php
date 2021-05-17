@@ -15,10 +15,9 @@ class AuthController extends Controller
     // }
     public function register(Request $request)
     {
-        $query = User::query();
         $data = $request->all();
         $data['password'] = Hash::make($data['password']);
-        $result = $query->create($data);
+        $result = User::create($data);
         return $result;
     }
     public function login(Request $request)
@@ -38,7 +37,7 @@ class AuthController extends Controller
     {
         $token = substr(bin2hex(random_bytes(10)), 0, 10);
         $email = $request->all()['email'];
-        $result = User::query()->where(['email' => $email])->get()->all();
+        $result = User::where(['email' => $email])->get()->all();
         if (!$result)
             return 0;
         $login = $result[0]['name'];
@@ -49,14 +48,14 @@ class AuthController extends Controller
     }
     public function newPassword($token, Request $request)
     {
-        $query = ResetPassword::query()->where(['token' => $token]);
+        $query = ResetPassword::where(['token' => $token]);
         $result = $query->get()->all();
         if (!$result)
             return 0;
         $query->delete();
         $email = $result[0]['email'];
         $password = Hash::make($request->all()["password"]);
-        $result = User::query()->where(['email' => $email])->update(["password" => $password]);
+        $result = User::where(['email' => $email])->update(["password" => $password]);
         return $result;
     }
     protected function respondWithToken($token)

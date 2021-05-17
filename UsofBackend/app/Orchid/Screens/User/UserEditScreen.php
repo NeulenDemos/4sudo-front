@@ -7,7 +7,6 @@ namespace App\Orchid\Screens\User;
 use App\Orchid\Layouts\Role\RolePermissionLayout;
 use App\Orchid\Layouts\User\UserEditLayout;
 use App\Orchid\Layouts\User\UserPasswordLayout;
-use App\Orchid\Layouts\User\UserRoleLayout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -19,8 +18,23 @@ use Orchid\Screen\Screen;
 use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
+use Orchid\Platform\Models\Role;
+use Orchid\Screen\Fields\Select;
+use Orchid\Screen\Layouts\Rows;
 
 use App\Models\User as appUser;
+
+class UserRoleLayout extends Rows {
+    public function fields(): array
+    {
+        return [
+            Select::make('user.roles.')
+                ->fromModel(Role::class, 'name')
+                ->title(__('Name role'))
+                ->help('Specify which groups this account should belong to'),
+        ];
+    }
+}
 
 class UserEditScreen extends Screen
 {

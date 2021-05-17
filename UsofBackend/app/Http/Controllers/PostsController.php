@@ -24,35 +24,32 @@ class PostsController extends Controller
     }
     public function get($id)
     {
-        $query = Posts::query();
-        $result = $query->where('id', '=', $id)->get('*');
+        $result = Posts::whereKey($id)->get();
         return $result;
     }
     public function getComments($id)
     {
-        $query = Comments::query();
-        $result = $query->where('post_id', '=', $id)->get('*');
+        $result = Comments::where('post_id', '=', $id)->get();
         return $result;
     }
     public function createComment($id, Request $request)
     {
         $user_id = auth()->user()->id;
-        $status = Posts::query()->where('id', '=', $id)->where('status', '=', TRUE)->get()->all();
+        $status = Posts::whereKey($id)->where('status', '=', TRUE)->get()->all();
         if (!$status)
             return response('0', 400);
-        $query = Comments::query();
         $data = $request->all();
         $data['post_id'] = $id;
         $data['user_id'] = $user_id;
-        $result = $query->create($data);
-        $subs = Subscriptions::query()->where('post_id', '=', $id)->get(['user_id'])->all();
+        $result = Comments::create($data);
+        $subs = Subscriptions::where('post_id', '=', $id)->get(['user_id'])->all();
         if ($subs) {
-            $author = User::query()->where('id', '=', $user_id)->get(['name'])->all()[0]['name'];
-            $title = Posts::query()->where('id', '=', $id)->get(['title'])->all()[0]['title'];
+            $author = User::whereKey($user_id)->get(['name'])->all()[0]['name'];
+            $title = Posts::whereKey($id)->get(['title'])->all()[0]['title'];
             $subs_id = [];
             foreach ($subs as $value)
                 array_push($subs_id, $value['user_id']);
-            $users = User::query()->whereKey($subs_id)->get(['email', 'name'])->all();
+            $users = User::whereKey($subs_id)->get(['email', 'name'])->all();
             foreach ($users as $user) {
                 MailController::sendSubscriptionNotification($user['email'], $user['name'], $author, $data['content'], $id, $title);
             }
@@ -61,45 +58,44 @@ class PostsController extends Controller
     }
     public function getCategories($id)
     {
-        $query = Posts::query();
-        $result = $query->where('id', '=', $id)->get('categories');
+        $result = Posts::whereKey($id)->get('categories');
         return $result[0]['categories'];
     }
     public function getLikes($id)
     {
-        $query = Likes::query();
-        $result = $query->where('post_id', '=', $id)->get('*');
+        $result = Likes::where('post_id', '=', $id)->get();
         return $result;
     }
     public function create(Request $request)
     {
         $user_id = auth()->user()->id;
-        $query = Posts::query();
         $data = $request->all();
         $data['user_id'] = $user_id;
         if (isset($data['categories']))
             $data['categories'] = json_encode($data['categories']);
-        $result = $query->create($data);
+        $result = Posts::create($data);
         return $result;
     }
     public function createLike($id, Request $request)
     {
         $user_id = auth()->user()->id;
-        $query = Likes::query();
+        $result  = Likes::where('post_id', '=', $id)->where('user_id', '=', $user_id)->get()->all();
+        if ($result)
+            return response()->json(['error' => 'Forbidden'], 403);
         $data = $request->all();
         $data['post_id'] = $id;
         $data['user_id'] = $user_id;
-        $result = $query->create($data);
+        $result = Likes::create($data);
         if ($data['type'] == 'like')
-            $query = Posts::query()->where('id', '=', $id)->increment('rating');
+            Posts::whereKey($id)->increment('rating');
         else if ($data['type'] == 'dislike')
-            $query = Posts::query()->where('id', '=', $id)->decrement('rating');
+            Posts::whereKey($id)->decrement('rating');
         return $result;
     }
     public function createFavorite($id)
     {
         $user_id = auth()->user()->id;
-        $query = User::query()->where('id', '=', $user_id);
+        $query = User::whereKey($user_id);
         $favorites = json_decode($query->get(['favorites'])->all()[0]['favorites']);
         $result = 0;
         $id = intval($id);
@@ -124,7 +120,7 @@ class PostsController extends Controller
     {
         $user_id = auth()->user()->id;
         $data = $request->all();
-        $query = Posts::query()->where('id', '=', $id);
+        $query = Posts::whereKey($id);
         $result = $query->get(['user_id'])->all();
         if (!$result)
             return response()->json(['error' => 'Not found'], 404);
@@ -141,13 +137,13 @@ class PostsController extends Controller
             array_push($result, $query->update(['categories' => json_encode($data['categories'])]));
         foreach ($result as $key)
             if ($key == 0)
-                return ["ok" => false];
-        return ["ok" => true];
+                return response('0', 400);
+        return response('1', 200);
     }
     public function delete($id)
     {
         $user_id = auth()->user()->id;
-        $query = Posts::query()->where('id', '=', $id);
+        $query = Posts::whereKey($id);
         $result = $query->get(['user_id'])->all();
         if (!$result)
             return response()->json(['error' => 'Not found'], 404);
@@ -159,20 +155,20 @@ class PostsController extends Controller
     public function deleteLike($id)
     {
         $user_id = auth()->user()->id;
-        $query = Likes::query()->where('post_id', '=', $id);
+        $query = Likes::where('post_id', '=', $id);
         $result = $query->get(['user_id'])->all();
         if (!$result)
             return response()->json(['error' => 'Not found'], 404);
         if ($result[0]['user_id'] != $user_id && !User::isAdmin())
             return response()->json(['error' => 'Forbidden'], 403);
         $result = $query->delete();
-        $query = Posts::query()->where('id', '=', $id)->decrement('rating');
+        $query = Posts::whereKey($id)->decrement('rating');
         return $result;
     }
     public function deleteFavorite($id)
     {
         $user_id = auth()->user()->id;
-        $query = User::query()->where('id', '=', $user_id);
+        $query = User::whereKey($user_id);
         $favorites = json_decode($query->get(['favorites'])->all()[0]['favorites']);
         $keys = array_keys($favorites, intval($id), true);
         $result = 0;
@@ -186,7 +182,7 @@ class PostsController extends Controller
     public function deleteSubscribe($id)
     {
         $user_id = auth()->user()->id;
-        $query = Subscriptions::query()->where('user_id', '=', $user_id)->where('post_id', '=', intval($id));
+        $query = Subscriptions::where('user_id', '=', $user_id)->where('post_id', '=', intval($id));
         $result = $query->delete();
         return $result;
     }

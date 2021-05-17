@@ -8,7 +8,6 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\PostsController;
 use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\AuthController;
-use Orchid\Platform\Models\Role;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,21 +33,30 @@ Route::group(['prefix' => 'auth'], function ($router) {
     Route::post('password-reset/{token}', C_PATH.'AuthController@newPassword');
 });
 
-Route::group(['middleware' => 'auth:api'], function ($router) {
 Route::get('users', C_PATH.'UsersController@getAll');
-Route::get('users/favorites', C_PATH.'UsersController@getFavorites');
 Route::get('users/{id}', C_PATH.'UsersController@get');
+
+Route::get('posts', C_PATH.'PostsController@getAll');
+Route::get('posts/{id}', C_PATH.'PostsController@get');
+Route::get('posts/{id}/comments', C_PATH.'PostsController@getComments');
+Route::get('posts/{id}/categories', C_PATH.'PostsController@getCategories');
+Route::get('posts/{id}/like', C_PATH.'PostsController@getLikes');
+
+Route::get('categories', C_PATH.'CategoriesController@getAll');
+Route::get('categories/{id}', C_PATH.'CategoriesController@get');
+Route::get('categories/{id}/posts', C_PATH.'CategoriesController@getPosts');
+
+Route::get('comments/{id}', C_PATH.'CommentsController@get');
+Route::get('comments/{id}/like', C_PATH.'CommentsController@getLikes');
+
+Route::group(['middleware' => 'auth:api'], function ($router) {
+Route::get('users/favorites', C_PATH.'UsersController@getFavorites');
 Route::post('users', C_PATH.'UsersController@create');
 Route::post('users/avatar', C_PATH.'UsersController@avatar');
 Route::patch('users/{id}', C_PATH.'UsersController@update');
 Route::delete('users/{id}', C_PATH.'UsersController@delete');
 
-Route::get('posts', C_PATH.'PostsController@getAll');
-Route::get('posts/{id}', C_PATH.'PostsController@get');
-Route::get('posts/{id}/comments', C_PATH.'PostsController@getComments');
 Route::post('posts/{id}/comments', C_PATH.'PostsController@createComment');
-Route::get('posts/{id}/categories', C_PATH.'PostsController@getCategories');
-Route::get('posts/{id}/like', C_PATH.'PostsController@getLikes');
 Route::post('posts', C_PATH.'PostsController@create');
 Route::post('posts/{id}/like', C_PATH.'PostsController@createLike');
 Route::post('posts/{id}/favorite', C_PATH.'PostsController@createFavorite');
@@ -59,15 +67,10 @@ Route::delete('posts/{id}/like', C_PATH.'PostsController@deleteLike');
 Route::delete('posts/{id}/favorite', C_PATH.'PostsController@deleteFavorite');
 Route::delete('posts/{id}/subscribe', C_PATH.'PostsController@deleteSubscribe');
 
-Route::get('categories', C_PATH.'CategoriesController@getAll');
-Route::get('categories/{id}', C_PATH.'CategoriesController@get');
-Route::get('categories/{id}/posts', C_PATH.'CategoriesController@getPosts');
 Route::post('categories', C_PATH.'CategoriesController@create');
 Route::patch('categories/{id}', C_PATH.'CategoriesController@update');
 Route::delete('categories/{id}', C_PATH.'CategoriesController@delete');
 
-Route::get('comments/{id}', C_PATH.'CommentsController@get');
-Route::get('comments/{id}/like', C_PATH.'CommentsController@getLikes');
 Route::post('comments/{id}/like', C_PATH.'CommentsController@createLike');
 Route::patch('comments/{id}', C_PATH.'CommentsController@update');
 Route::delete('comments/{id}', C_PATH.'CommentsController@delete');

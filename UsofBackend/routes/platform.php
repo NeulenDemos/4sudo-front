@@ -10,6 +10,12 @@ use App\Orchid\Screens\Examples\ExampleLayoutsScreen;
 use App\Orchid\Screens\Examples\ExampleScreen;
 use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
 use App\Orchid\Screens\PlatformScreen;
+use App\Orchid\Screens\Posts\PostsScreen;
+use App\Orchid\Screens\Posts\PostsCreateScreen;
+use App\Orchid\Screens\Posts\PostsEditScreen;
+use App\Orchid\Screens\Categories\CategoriesScreen;
+use App\Orchid\Screens\Categories\CategoriesCreateScreen;
+use App\Orchid\Screens\Categories\CategoriesEditScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
 use App\Orchid\Screens\User\UserEditScreen;
@@ -17,6 +23,7 @@ use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +35,62 @@ use Tabuna\Breadcrumbs\Trail;
 | contains the need "dashboard" middleware group. Now create something great!
 |
 */
+
+
+// Posts
+Route::screen('/posts', PostsScreen::class)
+    ->name('platform.posts.view')
+    ->breadcrumbs(function (Trail $trail) {
+        return $trail
+            ->parent('platform.index')
+            ->push(__('Posts'), route('platform.posts.view'));
+    });
+
+Route::screen('/posts//create', PostsCreateScreen::class)
+    ->name('platform.posts.create')
+    ->breadcrumbs(function (Trail $trail) {
+        return $trail
+            ->parent('platform.posts.view')
+            ->push(__('Create'), route('platform.posts.create'));
+    });
+
+Route::screen('/posts/{post}/edit', PostsEditScreen::class)
+    ->name('platform.posts.edit')
+    ->breadcrumbs(function (Trail $trail, $post) {
+        return $trail
+            ->parent('platform.posts.view')
+            ->push(__('Edit'), route('platform.posts.edit', $post));
+    });
+
+
+// Categories
+Route::screen('/categories', CategoriesScreen::class)
+    ->name('platform.categories.view')
+    ->breadcrumbs(function (Trail $trail) {
+        return $trail
+            ->parent('platform.index')
+            ->push(__('Categories'), route('platform.categories.view'));
+    });
+
+Route::screen('/categories//create', CategoriesCreateScreen::class)
+    ->name('platform.categories.create')
+    ->breadcrumbs(function (Trail $trail) {
+        return $trail
+            ->parent('platform.categories.view')
+            ->push(__('Create'), route('platform.categories.create'));
+    });
+
+Route::screen('/categories/{category}/edit', CategoriesEditScreen::class)
+    ->name('platform.categories.edit')
+    ->breadcrumbs(function (Trail $trail, $category) {
+        return $trail
+            ->parent('platform.categories.view')
+            ->push(__('Edit'), route('platform.categories.edit', $category));
+    });
+
+
+
+
 
 // Main
 Route::screen('/main', PlatformScreen::class)

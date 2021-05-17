@@ -8,6 +8,7 @@ use Laravel\Scout\Builder;
 use Orchid\Screen\Contracts\Personable;
 use Orchid\Screen\Contracts\Searchable;
 use Orchid\Support\Presenter;
+use Orchid\Support\Facades\Toast;
 
 class UserPresenter extends Presenter implements Searchable, Personable
 {
@@ -52,9 +53,10 @@ class UserPresenter extends Presenter implements Searchable, Personable
      */
     public function image(): ?string
     {
-        $hash = md5(strtolower(trim($this->entity->email)));
-
-        return "https://www.gravatar.com/avatar/$hash?d=mp";
+        $pic = $this->entity->picture;
+        if (gettype($pic) === 'integer')
+            $pic .= '.jpg';
+        return "/storage/images/".$pic;
     }
 
     /**

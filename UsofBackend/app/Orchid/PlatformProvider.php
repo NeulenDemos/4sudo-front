@@ -7,6 +7,11 @@ use Orchid\Platform\ItemPermission;
 use Orchid\Platform\OrchidServiceProvider;
 use Orchid\Screen\Actions\Menu;
 use Orchid\Support\Color;
+use App\Models\Posts;
+use App\Models\Categories;
+use App\Models\User;
+use Closure;
+use PhpParser\Node\Expr\FuncCall;
 
 class PlatformProvider extends OrchidServiceProvider
 {
@@ -26,6 +31,18 @@ class PlatformProvider extends OrchidServiceProvider
     public function registerMainMenu(): array
     {
         return [
+            Menu::make('Posts')
+                ->icon('monitor')
+                ->route('platform.posts.view')
+                ->title('Tables')
+                ->badge($this->getPostsCount()),
+
+
+            Menu::make('Categories')
+                ->icon('grid')
+                ->route('platform.categories.view')
+                ->badge($this->getCategoriesCount()),
+/*
             Menu::make('Example screen')
                 ->icon('monitor')
                 ->route('platform.example')
@@ -80,12 +97,13 @@ class PlatformProvider extends OrchidServiceProvider
                 ->badge(function () {
                     return Dashboard::version();
                 }, Color::DARK()),
-
+*/
             Menu::make(__('Users'))
                 ->icon('user')
                 ->route('platform.systems.users')
                 ->permission('platform.systems.users')
-                ->title(__('Access rights')),
+                ->title(__('Access rights'))
+                ->badge($this->getUsersCount()),
 
             Menu::make(__('Roles'))
                 ->icon('lock')
@@ -127,5 +145,18 @@ class PlatformProvider extends OrchidServiceProvider
             // ...Models
             // \App\Models\User::class
         ];
+    }
+
+    private function getPostsCount(): Closure
+    {
+        return function() { return Posts::get()->count(); };
+    }
+    private function getCategoriesCount(): Closure
+    {
+        return function() { return Categories::get()->count(); };
+    }
+    private function getUsersCount(): Closure
+    {
+        return function() { return User::get()->count(); };
     }
 }
