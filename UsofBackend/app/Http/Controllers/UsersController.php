@@ -18,6 +18,12 @@ class UsersController extends Controller
         $result = User::whereKey($id)->get();
         return $result;
     }
+    public function getMe()
+    {
+        $user_id = auth()->user()->id;
+        $result = User::whereKey($user_id)->get();
+        return $result;
+    }
     public function getFavorites()
     {
         $user_id = auth()->user()->id;

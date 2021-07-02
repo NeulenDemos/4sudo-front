@@ -30,6 +30,26 @@ class PostsController extends Controller
     public function getComments($id)
     {
         $result = Comments::where('post_id', '=', $id)->get();
+		if ($result) {
+			foreach ($result as $key => $value) {
+				$user = User::whereKey($value['user_id'])->get();
+				$result[$key]['user'] = $user[0];
+                $comments = Comments::where('comment_id', '=', $value['id'])->get();
+                if ($comments) {
+                    foreach ($comments as $key1 => $value1) {
+                        $user = User::whereKey($value1['user_id'])->get();
+                        $comments[$key1]['user'] = $user[0];
+                    }
+                }
+                $result[$key]['comments'] = $comments;
+			}
+		}
+        return $result;
+    }
+    public function getLike($id)
+    {
+        $user_id = auth()->user()->id;
+        $result  = Likes::where('post_id', '=', $id)->where('user_id', '=', $user_id)->get()->all();
         return $result;
     }
     public function createComment($id, Request $request)
@@ -152,17 +172,20 @@ class PostsController extends Controller
         $result = $query->delete();
         return $result;
     }
-    public function deleteLike($id)
+    public function deleteLike($id, Request $request)
     {
         $user_id = auth()->user()->id;
         $query = Likes::where('post_id', '=', $id);
-        $result = $query->get(['user_id'])->all();
+        $result = $query->get(['user_id', 'type'])->all();
         if (!$result)
             return response()->json(['error' => 'Not found'], 404);
         if ($result[0]['user_id'] != $user_id && !User::isAdmin())
             return response()->json(['error' => 'Forbidden'], 403);
+        if ($result[0]['type'] == 'like')
+            Posts::whereKey($id)->decrement('rating');
+        else if ($result[0]['type'] == 'dislike')
+            Posts::whereKey($id)->increment('rating');
         $result = $query->delete();
-        $query = Posts::whereKey($id)->decrement('rating');
         return $result;
     }
     public function deleteFavorite($id)

@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             $this->call(CategorySeeder::class);
         foreach(range(1, 30) as $_)
             $this->call(PostSeeder::class);
-        foreach(range(1, 100) as $_)
+        foreach(range(1, 30) as $_)
             $this->call(CommentSeeder::class);
         foreach(range(1, 5) as $_)
             $this->call(LikeSeeder::class);

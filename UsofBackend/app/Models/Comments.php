@@ -14,15 +14,19 @@ class Comments extends Model
      */
     protected $fillable = [
     	'user_id',
-		'post_id',
+        'post_id',
+        'comment_id',
         'date',
-        'content'
+        'content',
+        'best'
 	];
 
     protected $casts = [
     	'user_id' => 'integer',
 		'post_id' => 'integer',
+		'comment_id' => 'integer',
         'date' => 'timestamp',
-        'content' => 'string'
+        'content' => 'string',
+        'best' => 'integer'
     ];
 }

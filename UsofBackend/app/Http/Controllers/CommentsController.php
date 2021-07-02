@@ -31,6 +31,27 @@ class CommentsController extends Controller
         $result = Likes::create($data);
         return $result;
     }
+    public function createBest($id, Request $request)
+    {
+        $user_id = auth()->user()->id;
+        $result  = Comments::whereKey($id)->get()->all();
+        if ($result)
+            return response()->json(['error' => 'Forbidden'], 403);
+        $result = Comments::whereKey($id)->update(['best' => true]);
+        return $result;
+    }
+    public function createComment($id, Request $request)
+    {
+        $user_id = auth()->user()->id;
+        $status = Comments::whereKey($id)->get()->all();
+        if (!$status)
+            return response('0', 400);
+        $data = $request->all();
+        $data['comment_id'] = $id;
+        $data['user_id'] = $user_id;
+        $result = Comments::create($data);
+        return $result;
+    }
     public function update($id, Request $request)
     {
         $user_id = auth()->user()->id;
