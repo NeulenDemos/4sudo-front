@@ -1,28 +1,9 @@
-import React, {useContext, useEffect} from 'react'
-import {ApiContext} from "../context/api/apiContext";
-import {Loader} from "./Loader";
+import React, {useContext} from 'react'
 import {Link} from "react-router-dom";
+import ReactMarkdown from 'react-markdown';
+import {ApiContext} from "../context/api/apiContext";
+import {catColors, getDateString, getRatingClass, getRatingText} from "../context/utils";
 
-function getDateString(str) {
-    let date = new Date(str);
-    return date.toLocaleDateString() + ' at ' + date.toLocaleTimeString();
-}
-
-function getRatingClass(likes) {
-    if (likes > 10)
-        return "ratingGold";
-    else if (likes > 0)
-        return "ratingGreen";
-    else if (likes === 0)
-        return "ratingGrey";
-    return "ratingRed";
-}
-
-function getRatingText(likes) {
-    if (likes >= 0)
-        return `${likes} Likes`;
-    return `${-likes} Dislikes`;
-}
 
 function pagination(page, last_page, changePage) {
     const pages_range = 2;
@@ -53,42 +34,46 @@ function pagination(page, last_page, changePage) {
     );
 }
 
-export const Posts = ({posts}) => {
-    const {page, categories, fetchCategories, changePage} = useContext(ApiContext);
-    const catColors = [
-        "#cc2714",
-        "#cc5b14",
-        "#cc9214",
-        "#0f9962",
-        "#143fcc"];
+export const PostsList = ({posts, categories, squeeze=false}) => {
+    const {page, changePage} = useContext(ApiContext);
 
-    useEffect(() => {
-        fetchCategories();
-        // eslint-disable-next-line
-    }, [])
+    const fill_content = posts ? posts.data.map(post => (
+            <Link to={`/posts/${post.id}`} className={`list-group-item${squeeze ? '-squeeze' : ''} list-group-item-action`} aria-current="true" key={post.id}>
+                <div className="d-flex w-100 justify-content-between post-header">
+                    <h5 className="mb-1">{post.title}</h5>
+                    <span className="date-time">{getDateString(post.created_at)}</span>
+                </div>
+                <div className="tags mt-2">
+                    {categories ? categories.filter(tag => JSON.parse(post.categories).includes(tag.id.toString())).map(tag => (
+                        <span className="tag" style={{background: catColors[tag.id % catColors.length]}} key={tag.id}>{tag.title}</span>
+                    )) : null}
+                </div>
+                <p className="mb-1 mt-2"><ReactMarkdown>{post.content.length > 200 ? post.content.slice(0, 200) + '...' : post.content}</ReactMarkdown></p>
+                <div className="mt-2">
+                    <small className={getRatingClass(post.rating) + " rating"}>{getRatingText(post.rating)}</small>
+                </div>
+            </Link>
+        )) : null;
+
+    if (squeeze)
+        return (
+            fill_content && fill_content.length ?
+            <div>
+                {fill_content}
+                <div style={{marginTop: "10px", marginLeft: "auto", marginRight: "auto", width: "fit-content"}}>
+                    {posts ? pagination(page, posts.last_page, changePage) : null}
+                </div>
+            </div>
+        : <span className="empty-list-message">There is no any posts</span>);
 
     return (
-    <div className="container" style={{marginLeft: "auto", marginRight: "auto"}}>
-        <div className="list-group">
-            {posts ? posts.data.map(post => (
-                <Link to={`/posts/${post.id}`} className="list-group-item list-group-item-action" aria-current="true" key={post.id}>
-                    <div className="d-flex w-100 justify-content-between post-header">
-                        <h5 className="mb-1">{post.title}</h5>
-                        <small>{getDateString(post.created_at)}</small>
-                    </div>
-                    <div className="tags">
-                        {categories ? categories.filter(tag => JSON.parse(post.categories).includes(tag.id)).map(tag => (
-                            <span className="tag" style={{background: catColors[tag.id % catColors.length]}} key={tag.id}>{tag.title}</span>
-                        )) : <Loader/>}
-                    </div>
-                    <p className="mb-1">{post.content.length > 200 ? post.content.slice(0, 200) + '...' : post.content}</p>
-                    <small className={getRatingClass(post.rating) + " rating"}>{getRatingText(post.rating)}</small>
-                </Link>
-            )) : null}
+        <div className="container main-container" style={{marginLeft: "auto", marginRight: "auto", marginBottom: "10px"}}>
+            <div className="list-group content">
+                {fill_content}
+            </div>
+            <div style={{marginTop: "10px", marginLeft: "auto", marginRight: "auto", width: "fit-content"}}>
+                {posts ? pagination(page, posts.last_page, changePage) : null}
+            </div>
         </div>
-        <div style={{marginTop: "10px", marginLeft: "auto", marginRight: "auto", width: "fit-content"}}>
-            {posts ? pagination(page, posts.last_page, changePage) : null}
-        </div>
-    </div>
     );
 };

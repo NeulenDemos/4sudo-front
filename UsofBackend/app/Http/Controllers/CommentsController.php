@@ -60,11 +60,15 @@ class CommentsController extends Controller
         $result = $query->get(['user_id'])->all();
         if (!$result)
             return response()->json(['error' => 'Not found'], 404);
-        if ($result[0]['user_id'] != $user_id && !User::isAdmin())
-            return response()->json(['error' => 'Forbidden'], 403);
         $result = array();
-        if (isset($data['content']))
-            array_push($result, $query->update(['content' => $data['content']]));
+        if (isset($data['best']) && count($data) == 1)
+            array_push($result, $query->update(['best' => $data['best']]));
+        else {
+            if ($result[0]['user_id'] != $user_id && !User::isAdmin())
+                return response()->json(['error' => 'Forbidden'], 403);
+            if (isset($data['content']))
+                array_push($result, $query->update(['content' => $data['content']]));
+        }
         foreach ($result as $key)
             if ($key == 0)
                 return response('0', 400);

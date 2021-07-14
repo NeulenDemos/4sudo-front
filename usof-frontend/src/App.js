@@ -1,24 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import {Toaster} from "./components/Toaster";
+import {Loader} from './components/Loader';
+import {Navbar} from './components/Navbar';
+import {Footer} from "./components/Footer";
+import {Home} from './pages/Home';
+import {ApiState} from "./context/api/ApiState";
+import {Users} from './pages/Users';
+import {User} from './pages/User'
+import {EditUser} from './pages/EditUser'
+import {Post} from './pages/Post';
+import {Posts} from './pages/Posts';
+import {CreatePost} from "./pages/CreatePost";
+import {EditPost} from './pages/EditPost';
+import {Categories} from './pages/Categories';
+import {Login} from "./pages/Login";
+import {Registration} from "./pages/Registration";
+import {PasswordReset} from "./pages/PasswordReset";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <ApiState>
+          <BrowserRouter>
+              <Loader/>
+              <Navbar/>
+              <Switch>
+                  <Route path={'/'} exact component={Home}/>
+                  <Route path={'/users'} exact component={Users}/>
+                  <Route path={'/users/:id'} exact component={User}/>
+                  <Route path={'/users/:id/edit'} exact component={EditUser}/>
+                  <Route path={'/posts'} exact component={Posts}/>
+                  <Route path={'/posts/create'} exact component={CreatePost}/>
+                  <Route path={'/posts/:id'} exact component={Post}/>
+                  <Route path={'/posts/:id/edit'} exact component={EditPost}/>
+                  <Route path={'/categories/'} component={Categories}/>
+                  <Route path={'/login'} first component={Login}/>
+                  <Route path={'/registration'} first component={Registration}/>
+                  <Route path={'/password-reset'} first component={PasswordReset}/>
+              </Switch>
+              <Footer/>
+              <Toaster/>
+          </BrowserRouter>
+      </ApiState>
   );
 }
 
