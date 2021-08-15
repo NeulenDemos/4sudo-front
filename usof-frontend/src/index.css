@@ -44,13 +44,14 @@ body {
   font-weight: bold;
 }
 .nav-search {
+  width: 28%;
   margin-left: 15px;
   margin-right: 10px;
 }
 .nav-search input {
+  width: 100%;
   border: 1px solid #cccccc;
   border-radius: 99px;
-  width: 500px;
   padding-left: 24px;
 }
 .nav-search input:focus {
@@ -85,7 +86,7 @@ body {
 #nav-search-icon {
   margin-bottom: 2px;
   color: #777777;
-  margin-left: -498px;
+  margin-left: calc(-100% + 2px);
   font-size: 22px;
 }
 @media (max-width: 1695px) {
@@ -98,14 +99,6 @@ body {
   .navbar {
     padding-left: 10px;
     padding-right: 10px;
-  }
-}
-@media (max-width: 1235px) {
-  .nav-search input {
-    width: 200px;
-  }
-  #nav-search-icon {
-    margin-left: -198px;
   }
 }
 .nav-profile {
@@ -346,6 +339,10 @@ body {
   margin-bottom: 5px;
   font-size: 16px;
 }
+.pagination-box {
+  width: fit-content;
+  margin: 10px auto 0 auto;
+}
 
 @media (min-width: 936px) {
   #navbarToggleExternalContent, #nav-menu {
@@ -355,6 +352,9 @@ body {
 @media (max-width: 935px) {
   .hidden-phone {
     display: none !important;
+  }
+  .nav-search {
+    width: 100%;
   }
 }
 @media (max-width: 635px) {
@@ -383,7 +383,7 @@ body {
 }
 @media (max-width: 555px) {
   .navbar-brand {
-    margin: auto;
+    margin: 0 auto;
   }
   #search-main {
     display: none;
@@ -414,8 +414,5 @@ body {
 @media (max-width: 575px) {
   .resp-col {
     width: 100% !important;
-  }
-  .navbar {
-    padding-top: 0 !important;
   }
 }

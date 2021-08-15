@@ -1,41 +1,17 @@
-import React, {useContext} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {Link} from "react-router-dom";
 import ReactMarkdown from 'react-markdown';
 import {ApiContext} from "../context/api/apiContext";
-import {catColors, getDateString, getRatingClass, getRatingText} from "../context/utils";
+import {catColors, getDateString, getRatingClass, getRatingText, pagination} from "../context/utils";
 
-
-function pagination(page, last_page, changePage) {
-    const pages_range = 2;
-    let last_curr = last_page;
-    let first_page = page - pages_range;
-    if (first_page < 1)
-        first_page = 1;
-    if (last_curr > page + pages_range)
-        last_curr = page + pages_range;
-    let pages = [];
-    for (let i = first_page; i < page; i++)
-        pages.push(<li className="page-item"><button className="page-link" onClick={() => changePage(i)}>{i}</button></li>);
-    pages.push(<li className="page-item active" aria-current="page"><span className="page-link">{page}</span></li>);
-    for (let i = page + 1; i < last_curr + 1; i++)
-        pages.push(<li className="page-item"><button className="page-link" onClick={() => changePage(i)}>{i}</button></li>);
-    return (
-        <nav aria-label="...">
-            <ul className="pagination">
-                <li className="page-item">
-                    <button className="page-link" onClick={() => changePage(1)}>First</button>
-                </li>
-                {pages}
-                <li className="page-item">
-                    <button className="page-link" onClick={() => changePage(last_page)}>Last</button>
-                </li>
-            </ul>
-        </nav>
-    );
-}
 
 export const PostsList = ({posts, categories, squeeze=false}) => {
     const {page, changePage} = useContext(ApiContext);
+
+    useEffect(() => {
+        changePage(1);
+        // eslint-disable-next-line
+    },[])
 
     const fill_content = posts ? posts.data.map(post => (
             <Link to={`/posts/${post.id}`} className={`list-group-item${squeeze ? '-squeeze' : ''} list-group-item-action`} aria-current="true" key={post.id}>
@@ -44,7 +20,7 @@ export const PostsList = ({posts, categories, squeeze=false}) => {
                     <span className="date-time">{getDateString(post.created_at)}</span>
                 </div>
                 <div className="tags mt-2">
-                    {categories ? categories.filter(tag => JSON.parse(post.categories).includes(tag.id.toString())).map(tag => (
+                    {categories ? categories.data.filter(tag => JSON.parse(post.categories).includes(tag.id.toString())).map(tag => (
                         <span className="tag" style={{background: catColors[tag.id % catColors.length]}} key={tag.id}>{tag.title}</span>
                     )) : null}
                 </div>
@@ -64,14 +40,14 @@ export const PostsList = ({posts, categories, squeeze=false}) => {
                     {posts ? pagination(page, posts.last_page, changePage) : null}
                 </div>
             </div>
-        : <span className="empty-list-message">There is no any posts</span>);
+        : <span className="empty-list-message">There are no posts</span>);
 
     return (
         <div className="container main-container" style={{marginLeft: "auto", marginRight: "auto", marginBottom: "10px"}}>
             <div className="list-group content">
                 {fill_content}
             </div>
-            <div style={{marginTop: "10px", marginLeft: "auto", marginRight: "auto", width: "fit-content"}}>
+            <div className="pagination-box">
                 {posts ? pagination(page, posts.last_page, changePage) : null}
             </div>
         </div>

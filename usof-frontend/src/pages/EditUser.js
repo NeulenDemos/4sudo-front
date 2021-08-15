@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import {Redirect} from "react-router-dom";
 import {ApiContext} from "../context/api/apiContext";
 import Cookies from "js-cookie";
+import {Helmet} from "react-helmet";
 import {emailRegexp, passRegexp} from "../context/utils";
 import {Avatar} from "../components/Avatar";
 
@@ -68,6 +69,7 @@ export const EditUser = ({match}) => {
 
     return (
         <Fragment>
+            <Helmet title="Edit user"/>
             <div className="container" style={{marginTop: "20px", marginBottom: "20px"}}>
                 <h1 className="display-6">Profile settings</h1>
             </div>

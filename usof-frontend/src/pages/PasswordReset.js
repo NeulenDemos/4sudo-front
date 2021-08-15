@@ -2,6 +2,7 @@ import React, {Fragment, useContext} from 'react';
 import toast from 'react-hot-toast';
 import {ApiContext} from "../context/api/apiContext";
 import {Link} from "react-router-dom";
+import {Helmet} from "react-helmet";
 import {emailRegexp} from "../context/utils";
 
 export const PasswordReset = () => {
@@ -23,6 +24,7 @@ export const PasswordReset = () => {
 
     return (
         <Fragment>
+            <Helmet title="Password reset"/>
             <div className="main-container" style={{display: "flex", flexDirection: "column", maxWidth: "300px", padding: "10px", margin: "auto"}}>
                 <span style={{textAlign: "center", fontSize: "28px"}}>Password reset</span>
                 <form style={{backgroundColor: "#f6f8fa", border: "1px solid #ebedef", borderRadius: "5px", marginTop: "15px"}}>

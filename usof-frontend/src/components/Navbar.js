@@ -10,9 +10,16 @@ import {Avatar} from "./Avatar";
 function search(e, setSearchText) {
     if (e.key !== 'Enter')
         return;
-    const text = e.target.value.trim();
-    if (text)
-        setSearchText(text.toLowerCase());
+    let text = e.target.value.trim();
+    if (text) {
+        let type;
+        switch (text[0]) {
+            case '#': type = 'category'; text = text.toLowerCase().slice(1); break;
+            case '@': type = 'user'; text = text.toLowerCase().slice(1); break;
+            default: type = 'post'; text = text.toLowerCase();
+        }
+        setSearchText({text, type});
+    }
 }
 
 export const Navbar = () => {
@@ -28,8 +35,16 @@ export const Navbar = () => {
     }, [isAuth])
 
     if (searchText) {
-        setTimeout(setSearchText, 0);
-        return <Redirect to={`/posts?search=${searchText}`}/>;
+        setTimeout(setSearchText, 100);
+        // eslint-disable-next-line default-case
+        switch (searchText.type) {
+            case 'category':
+                return <Redirect to={`/categories?search=${searchText.text}`}/>;
+            case 'user':
+                return <Redirect to={`/users?search=${searchText.text}`}/>;
+            case 'post':
+                return <Redirect to={`/posts?search=${searchText.text}`}/>;
+        }
     }
 
     return (
@@ -60,7 +75,7 @@ export const Navbar = () => {
                     </li>
                 </ul>
                 <div className="nav-search" id="search-main">
-                    <input type="search" placeholder="Search posts" onKeyDown={event => search(event, setSearchText)}/>
+                    <input type="search" placeholder="Posts, #categories, @users" onKeyDown={event => search(event, setSearchText)}/>
                     <SearchRounded id="nav-search-icon"/>
                 </div>
                 <div className="nav-profile">
@@ -85,7 +100,7 @@ export const Navbar = () => {
             <div className="collapse" style={{display: openMenu ? "block" : "none"}}>
                 <div className="bg-light p-4">
                     <div className="nav-search" id="search-phone">
-                        <input type="search" placeholder="Search posts" onKeyDown={event => search(event, setSearchText)}/>
+                        <input type="search" placeholder="Posts, #categories, @users" onKeyDown={event => search(event, setSearchText)}/>
                         <SearchRounded id="nav-search-icon"/>
                     </div>
                     <div onClick={() => setOpenMenu(false)}>

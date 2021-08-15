@@ -1,6 +1,7 @@
 import React from "react";
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import {Toaster} from "./components/Toaster";
+import {Helmet} from 'react-helmet'
 import {Loader} from './components/Loader';
 import {Navbar} from './components/Navbar';
 import {Footer} from "./components/Footer";
@@ -22,6 +23,7 @@ function App() {
   return (
       <ApiState>
           <BrowserRouter>
+              <Helmet defaultTitle="4Sudo" titleTemplate="%s ∣ 4Sudo"/>
               <Loader/>
               <Navbar/>
               <Switch>

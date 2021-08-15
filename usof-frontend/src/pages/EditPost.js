@@ -1,11 +1,14 @@
 import React, {Fragment, useContext, useEffect, useState} from 'react';
 import toast from 'react-hot-toast';
-import AsyncSelect from 'react-select/async'
-import makeAnimated from 'react-select/animated'
+import axios from "axios";
+import AsyncSelect from 'react-select/async';
+import makeAnimated from 'react-select/animated';
 import {Redirect} from "react-router-dom";
 import {ApiContext} from "../context/api/apiContext";
 import Cookies from "js-cookie";
+import {Helmet} from "react-helmet";
 import * as Icons from "@material-ui/icons";
+import {apiUrl} from "../context/utils";
 
 
 function formSubmitHandler(event, id, title, content, status, cats, editPost, setSuccess) {
@@ -27,14 +30,13 @@ function formSubmitHandler(event, id, title, content, status, cats, editPost, se
     setTimeout(setSuccess, 1500, true);
 }
 
-const loadOptions = async (data, callback, cats) => {
-    cats = cats.filter(cat => (cat.title.toLowerCase().indexOf(data.toLowerCase()) !== -1));
-    cats = cats.map(cat => ({label: cat.title, value: cat.id}));
-    callback(cats);
+const loadOptions = async (data, callback) => {
+    const res = await axios.get(`${apiUrl}/categories?search=${data}`);
+    callback(res.data.map(cat => ({label: cat.title, value: cat.id})));
 }
 
 export const EditPost = ({match}) => {
-    const {categories, post, user, fetchCategories, fetchPost, fetchUser, isAuth, editPost} = useContext(ApiContext);
+    const {post, user, fetchPost, fetchUser, isAuth, editPost} = useContext(ApiContext);
     const [title, setTitle] = useState();
     const [content, setContent] = useState();
     const [status, setStatus] = useState();
@@ -47,11 +49,15 @@ export const EditPost = ({match}) => {
         if (!isAuth)
             return;
         fetchPost(post_id);
-        fetchCategories();
         if (post)
             fetchUser(post.user_id);
         // eslint-disable-next-line
     }, []);
+    useEffect(() => {
+        if (post)
+            fetchUser(post.user_id);
+        // eslint-disable-next-line
+    }, [post]);
     if (!isAuth)
         return <Redirect to="/login"/>;
     if (user && me)
@@ -74,10 +80,11 @@ export const EditPost = ({match}) => {
     }
     return (
         <Fragment>
+            <Helmet title="Edit post"/>
             <div className="container" style={{marginTop: "20px", marginBottom: "20px"}}>
                 <h1 className="display-6">Edit a post</h1>
             </div>
-                {post && categories && user && me ?
+                {post && user && me ?
                     <div className="container main-container">
                         <div className="content" style={{marginTop: "20px", padding: "20px"}}>
                             <form className="create-post">
@@ -92,7 +99,7 @@ export const EditPost = ({match}) => {
                                     components={makeAnimated()}
                                     value={selectCategories}
                                     onChange={cats => setCategories(cats)}
-                                    loadOptions={(data, callback) => loadOptions(data, callback, categories)}
+                                    loadOptions={(data, callback) => loadOptions(data, callback)}
                                     placeholder="Search the categories..."
                                     isMulti
                                     theme={theme => ({

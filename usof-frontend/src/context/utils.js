@@ -53,3 +53,32 @@ export function useViewport() {
     }, []);
     return width;
 }
+
+export function pagination(page, last_page, changePage) {
+    const pages_range = 2;
+    let last_curr = last_page;
+    let first_page = page - pages_range;
+    if (first_page < 1)
+        first_page = 1;
+    if (last_curr > page + pages_range)
+        last_curr = page + pages_range;
+    let pages = [];
+    for (let i = first_page; i < page; i++)
+        pages.push(<li className="page-item"><button className="page-link" onClick={() => changePage(i)}>{i}</button></li>);
+    pages.push(<li className="page-item active" aria-current="page"><span className="page-link">{page}</span></li>);
+    for (let i = page + 1; i < last_curr + 1; i++)
+        pages.push(<li className="page-item"><button className="page-link" onClick={() => changePage(i)}>{i}</button></li>);
+    return (
+        <nav aria-label="...">
+            <ul className="pagination pagination-sm">
+                <li className="page-item">
+                    <button className="page-link" onClick={() => changePage(1)}>First</button>
+                </li>
+                {pages}
+                <li className="page-item">
+                    <button className="page-link" onClick={() => changePage(last_page)}>Last</button>
+                </li>
+            </ul>
+        </nav>
+    );
+}

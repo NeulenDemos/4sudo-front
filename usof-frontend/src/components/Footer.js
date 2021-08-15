@@ -29,7 +29,7 @@ export const Footer = () => {
                 </div>
                 <div className="d-flex flex-column">
                     <span className="links">References</span>
-                    <a href="https://github.com/naztar0" target="_blank" rel="noreferrer">Github</a>
+                    <a href="https://github.com/naztar0" target="_blank" rel="noreferrer">GitHub</a>
                     <a href="https://t.me/NrTrN" target="_blank" rel="noreferrer">Telegram</a>
                     <a href="https://github.com/naztar0/UcodeTrackWeb" target="_blank" rel="noreferrer">Source code</a>
                 </div>

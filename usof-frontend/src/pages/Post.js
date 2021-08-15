@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import {Link} from "react-router-dom";
 import ReactMarkdown from 'react-markdown';
 import Cookies from 'js-cookie';
+import {Helmet} from "react-helmet";
 import {ApiContext} from "../context/api/apiContext";
 import {catColors, getDateString, getRatingClass, getRatingText} from "../context/utils";
 import * as Icons from "@material-ui/icons";
@@ -196,6 +197,7 @@ export const Post = ({match}) => {
 
     return (
         <Fragment>
+            <Helmet title={post ? post.title : "Post"}/>
             {post && categories && user ?
                 <div className="container main-container" style={{marginTop: "20px", padding: "20px", width: "1000px"}}>
                     <div className="list-group content">
@@ -205,7 +207,7 @@ export const Post = ({match}) => {
                                 <span className="date-time">{getDateString(post.created_at)}</span>
                             </div>
                             <div className="tags mt-2">
-                                {categories.filter(tag => JSON.parse(post.categories).includes(tag.id.toString())).map(tag => (
+                                {categories.data.filter(tag => JSON.parse(post.categories).includes(tag.id.toString())).map(tag => (
                                     <Link to={`/posts?category=${tag.id}`} style={{color: "#212529", textDecoration: "none"}}>
                                         <span className="tag" style={{background: catColors[tag.id % catColors.length]}} key={tag.id}>{tag.title}</span>
                                     </Link>

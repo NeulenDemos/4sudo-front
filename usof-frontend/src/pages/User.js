@@ -6,6 +6,7 @@ import * as Icons from "@material-ui/icons";
 import {getDateString, getRatingClass, getRatingText} from "../context/utils";
 import {PostsList} from "../components/PostsList";
 import ReactMarkdown from "react-markdown";
+import {Helmet} from "react-helmet";
 import {Avatar} from "../components/Avatar";
 
 
@@ -53,7 +54,7 @@ const CommentsList = ({comments}) => {
                 <small className={getRatingClass(comm.rating) + " rating"}>{getRatingText(comm.rating)}</small>
             </div>
         </Link>
-    )) : <span className="empty-list-message">There is no any comments</span>);
+    )) : <span className="empty-list-message">There are no comments</span>);
 };
 
 const LikesList = ({likes}) => {
@@ -62,7 +63,7 @@ const LikesList = ({likes}) => {
             <span className="date-time">{getDateString(like.created_at)}</span>
             <p className="mb-1 mt-" style={{fontWeight: 500, fontSize: "14px"}}>Post №{like.post_id}</p>
         </Link>
-    )) : <span className="empty-list-message">There is no any likes</span>);
+    )) : <span className="empty-list-message">There are no likes</span>);
 };
 
 function UserContent({menuItem, posts, categories, comments, likes, favorites}) {
@@ -106,6 +107,7 @@ export const User = ({match}) => {
 
     return (
         <Fragment>
+            <Helmet title={user ? user.name : "User"}/>
             {user ?
                 <div className="container main-container" style={{marginTop: "20px", marginBottom: "20px"}}>
                     <div className="content" style={{padding: "20px"}}>
@@ -143,7 +145,7 @@ export const User = ({match}) => {
                                     <button id="log-out" style={{width: "100%"}} onClick={logout}>Log out</button>
                                 : null}
                             </div>
-                            <div className="user-addons" style={{width: "70%"}}>
+                            <div className="user-addons" style={{width: "80%"}}>
                                 <div className="user-menu">
                                     <div className="d-flex flex-row button-block">
                                         <button id="btn-posts" className="user-menu-items" onClick={() => setMenuItem(1)}>Posts</button>

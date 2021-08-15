@@ -7,9 +7,27 @@ import * as types from '../types';
 import {apiUrl} from "../utils";
 import toast from 'react-hot-toast';
 
+const prepareUrlParams = (inline_params, state_params) => {
+    let urlParams = typeof(inline_params) === 'string' ? inline_params.replace('?', '&') : '';
+    let params = state_params || (inline_params && typeof(inline_params) === 'object' ? inline_params : null);
+    if (params)
+        Object.keys(params).forEach((key) => {
+            if (params[key] !== null)
+                urlParams += `&${key}=${params[key]}`
+        });
+    return urlParams.slice(1);
+}
+const paramsWrap = (params, prefix='&') => {
+    return params ? prefix + params : '';
+}
+
 
 export const ApiState = ({children}) => {
-    const [state, dispatch] = useReducer(apiReducer, {loading: false, page: 1, posts_per_page: 5, asc: false});
+    const [state, dispatch] = useReducer(apiReducer, {loading: false, asc: false,
+        page: 1,
+        posts_per_page_posts: 5,
+        posts_per_page_categories: 12,
+        posts_per_page_users: 24});
 
     const showLoader = () => dispatch({type: types.SHOW_LOADER});
 
@@ -19,14 +37,8 @@ export const ApiState = ({children}) => {
 
     const fetchPosts = async (inline_params=null) => {
         showLoader();
-        let urlParams = typeof(inline_params) === 'string' ? inline_params.replace('?', '&') : '';
-        let params = state.posts_params || (inline_params && typeof(inline_params) === 'object' ? inline_params : null);
-        if (params)
-            Object.keys(params).forEach((key) => {
-                if (params[key] !== null)
-                    urlParams += `&${key}=${params[key]}`
-            });
-        const res = await axios.get(`${apiUrl}/posts?page=${state.page}&posts_per_page=${state.posts_per_page}${urlParams}`);
+        const urlParams = prepareUrlParams(inline_params, state.posts_params);
+        const res = await axios.get(`${apiUrl}/posts?page=${state.page}&posts_per_page=${state.posts_per_page_posts}${paramsWrap(urlParams)}`);
         const payload = res.data;
         dispatch({type: types.FETCH_POSTS, payload});
     };
@@ -52,9 +64,10 @@ export const ApiState = ({children}) => {
         dispatch({type: types.FETCH_POST_ACTIONS, payload});
     };
 
-    const fetchCategories = async () => {
+    const fetchCategories = async (inline_params=null, pagination=false) => {
         showLoader();
-        const res = await axios.get(`${apiUrl}/categories`);
+        const urlParams = prepareUrlParams(inline_params);
+        const res = await axios.get(`${apiUrl}/categories?page=${pagination ? state.page : 1}&posts_per_page=${pagination ? state.posts_per_page_categories : 999}${paramsWrap(urlParams)}`);
         const payload = res.data;
         dispatch({type: types.FETCH_CATEGORIES, payload});
     };
@@ -91,9 +104,10 @@ export const ApiState = ({children}) => {
         console.log(state)
     };
 
-    const fetchUsers = async () => {
+    const fetchUsers = async (inline_params=null) => {
         showLoader();
-        const res = await axios.get(`${apiUrl}/users`);
+        const urlParams = prepareUrlParams(inline_params);
+        const res = await axios.get(`${apiUrl}/users?page=${state.page}&posts_per_page=${state.posts_per_page_users}${paramsWrap(urlParams)}`);
         const payload = res.data;
         dispatch({type: types.FETCH_USERS, payload});
     };
