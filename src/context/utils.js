@@ -14,8 +14,8 @@ export const catColorsLight = [
     "#66cca3",
     "#809dff"];
 
-export const appUrl = "https://murmuring-bayou-41768.herokuapp.com" // process.env.APP_URL
-export const apiUrl = appUrl + "/api";
+export const appUrl = "https://4sudo.neulen.dev" // process.env.APP_URL
+export const apiUrl = "https://4sudo-back.vercel.app/api/api";
 export const storageUrl = appUrl + "/storage";
 export const emailRegexp = /^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}$/g;
 export const passRegexp = /^.{8,}$/g;
