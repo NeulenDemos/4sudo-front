@@ -207,7 +207,7 @@ export const Post = ({match}) => {
                                 <span className="date-time">{getDateString(post.created_at)}</span>
                             </div>
                             <div className="tags mt-2">
-                                {categories.data.filter(tag => JSON.parse(post.categories).includes(tag.id.toString())).map(tag => (
+                                {categories.filter(tag => JSON.parse(post.categories).includes(tag.id.toString())).map(tag => (
                                     <Link to={`/posts?category=${tag.id}`} style={{color: "#212529", textDecoration: "none"}}>
                                         <span className="tag" style={{background: catColors[tag.id % catColors.length]}} key={tag.id}>{tag.title}</span>
                                     </Link>
