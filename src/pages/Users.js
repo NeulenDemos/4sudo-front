@@ -26,7 +26,7 @@ export const Users = ({location}) => {
             <div className="container main-container" style={{padding: "20px"}}>
                 <div className="row content">
                     {users ?
-                        users.data.map(user => (
+                        users.map(user => (
                             <div className="resp-col col-sm-3 mt-3">
                                 <Link to={`/users/${user.id}`} style={{color: "#212529", textDecoration: "none"}}>
                                     <div className="d-flex flex-row" style={{padding: "5px", borderRadius: "5px", border: "1px solid #dddddd", backgroundColor: "#fefefe"}}>

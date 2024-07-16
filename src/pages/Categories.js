@@ -25,7 +25,7 @@ export const Categories = ({location}) => {
             <div className="container main-container" style={{padding: "20px"}}>
                 <div className="row content">
                     {categories ?
-                        categories.data.map(category => (
+                        categories.map(category => (
                             <div className="resp-col col-sm-3 mt-3">
                                 <div className="card" style={{borderColor: catColors[category.id % catColors.length]}}>
                                     <Link to={`/posts?category=${category.id}`} style={{color: "#212529", textDecoration: "none"}}>
