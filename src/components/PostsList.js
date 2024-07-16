@@ -20,7 +20,7 @@ export const PostsList = ({posts, categories, squeeze=false}) => {
                     <span className="date-time">{getDateString(post.created_at)}</span>
                 </div>
                 <div className="tags mt-2">
-                    {categories ? categories.data.filter(tag => JSON.parse(post.categories).includes(tag.id.toString())).map(tag => (
+                    {categories ? categories.filter(tag => JSON.parse(post.categories).includes(tag.id.toString())).map(tag => (
                         <span className="tag" style={{background: catColors[tag.id % catColors.length]}} key={tag.id}>{tag.title}</span>
                     )) : null}
                 </div>
