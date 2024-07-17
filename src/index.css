@@ -237,7 +237,7 @@ body {
   min-height: 48px;
   border: 1px solid rgb(229, 227, 221);
   outline: none;
-  resize: none;
+  resize: vertical;
   border-radius: 6px;
   padding: 5px 10px;
   font-size: 15px;
