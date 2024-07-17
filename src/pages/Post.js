@@ -54,7 +54,7 @@ function btnHandler(event, post_id, opt, setOpt, opt2, setCallback, sendAction, 
             sendAction({id: post_id, remove: opt});
             break;
         case "share-btn":
-            navigator.clipboard.writeText(`https://murmuring-bayou-41768.herokuapp.com/posts/${post_id}`).then();
+            navigator.clipboard.writeText(`https://4sudo.neulen.dev/posts/${post_id}`).then();
             toast.success("Share link copied to clipboard!");
             break;
         case "report-btn":
@@ -129,7 +129,7 @@ const ReplyBlock = ({post_id, comm, avatar, username, sendComm, isAuth, fetchCom
             <div style={{marginLeft: "15px", height: "48px"}}>
                 <button className="post-reply-btn" onClick={() =>
                     replyHandler(sub && text ? `[@${comm.user.login}](/users/${comm.user.id}) ${text}` : text,
-                        post_id, comm.id, sendComm, isAuth, fetchComm)}>
+                        post_id, comm?.id, sendComm, isAuth, fetchComm)}>
                     <Icons.SendRounded/></button>
             </div>
         </div>
